@@ -45,4 +45,4 @@ Python TEXTWRAP Library
 
 ### Todos??
 
--   Everythin could be...
+-   Add options menu kinda like ui but in console and colored
