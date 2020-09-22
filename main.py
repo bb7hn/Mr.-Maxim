@@ -5,6 +5,9 @@ from PIL import Image, ImageDraw, ImageFont
 from json import loads
 import textwrap
 import os.path
+from colorama import Fore, Back, Style, init
+
+init()
 textColor = (0, 0, 0)
 bgColor = (255, 255, 255)
 
@@ -41,10 +44,14 @@ class Maxim:
         text=('MR. MAXIM', 'center_bottom'),
         font='./fonts/constani.ttf',
         fontsize=36,
-        logo=('./img/logo.jpg', 'bottom', 'center'),
+        logo=('./img/logo/logo.jpg', 'bottom', 'center'),
         logoResize=True,
-        logoSize=(180, 180)
+        logoSize=(180, 180),
+        specialBG=False,
+        bgImage="./img/background/bg.jpg"
     ):
+        self.specialBG = specialBG
+        self.bgImage = bgImage
         self.bgColor = Colors[1]
         self.width = size[0]
         self.height = size[1]
@@ -58,7 +65,11 @@ class Maxim:
         self.logoSize = logoSize
         self.logoResize = logoResize
 
-    def Start(self):
+    def DifferentBG(self):
+        backgroundList = []
+        for file in os.listdir("./img/background/"):
+            if file.endswith(".jpg"):
+                backgroundList.append(os.path.join("./img/background/", file))
         f = io.open("texts.txt", mode="r", encoding="utf-8")
         texts = f.read()
         texts = loads(texts)
@@ -87,6 +98,151 @@ class Maxim:
             logoresize = False
         logosize = (configs["logosizew"], configs["logosizeh"])
         font = configs["font"]
+        indexer = 0
+        indexerText = 0
+        counter = 1
+        if len(texts) > len(backgroundList):
+            limit = len(texts)
+        else:
+            limit = len(backgroundList)
+        printProgressBar(0, limit, prefix='Progress:',
+                         suffix='Complete', length=50)
+        for i in range(limit):
+            if indexer == len(backgroundList):
+                indexer = 0
+            if indexerText == len(texts):
+                indexerText = 0
+            text = (texts[indexerText], textalign)
+            photo = Maxim(
+                [width,
+                 height],
+                [textcolor,
+                 backgroundcolor],
+                text,
+                font,
+                fontsize,
+                logo,
+                logoresize,
+                logosize,
+                True, backgroundList[indexer])
+            photo.Create(counter, './outputs/')
+            counter += 1
+            indexer += 1
+            printProgressBar(counter-1, limit, prefix='Progress:',
+                             suffix='Complete', length=50)
+        print(counter-1, " Photos created with " +
+              str(len(backgroundList))+" different bg and "+str(len(texts))+"...\n")
+        main()
+
+    def DifferentLogo(self):
+        logoList = []
+        for file in os.listdir("./img/logo/"):
+            if file.endswith(".jpg"):
+                logoList.append(os.path.join("./img/logo/", file))
+        f = io.open("texts.txt", mode="r", encoding="utf-8")
+        texts = f.read()
+        texts = loads(texts)
+        f = io.open("config.txt", mode="r", encoding="utf-8")
+        configs = f.read()
+        configs = loads(configs)
+        textcolor = []
+        for number in configs["textcolor"]:
+            textcolor.append(number)
+        textcolor = (
+            textcolor[0], textcolor[1], textcolor[2])
+        backgroundcolor = []
+        for number in configs["backgroundcolor"]:
+            backgroundcolor.append(number)
+        backgroundcolor = (
+            backgroundcolor[0], backgroundcolor[1], backgroundcolor[2])
+        width = configs["width"]
+        height = configs["height"]
+        textalign = configs["textalign"]
+        fontsize = configs["fontsize"]
+        if configs["logoresize"] >= 1:
+            logoresize = True
+        else:
+            logoresize = False
+        if configs["specialbg"] >= 1:
+            specialbg = True
+        else:
+            specialbg = False
+        backgroundimage = configs["backgroundimage"]
+        logosize = (configs["logosizew"], configs["logosizeh"])
+        font = configs["font"]
+        indexer = 0
+        indexerText = 0
+        counter = 1
+        if len(texts) > len(logoList):
+            limit = len(texts)
+        else:
+            limit = len(logoList)
+        printProgressBar(0, limit, prefix='Progress:',
+                         suffix='Complete', length=50)
+        for i in range(limit):
+            if indexer == len(logoList):
+                indexer = 0
+            if indexerText == len(texts):
+                indexerText = 0
+            logo = (logoList[indexer], configs["logovertical"],
+                    configs["logohorizontal"])
+            text = (texts[indexerText], textalign)
+            photo = Maxim(
+                [width,
+                 height],
+                [textcolor,
+                 backgroundcolor],
+                text,
+                font,
+                fontsize,
+                logo,
+                logoresize,
+                logosize, specialbg, backgroundimage)
+            photo.Create(counter, './outputs/')
+            counter += 1
+            indexer += 1
+            indexerText += 1
+            printProgressBar(counter-1, limit, prefix='Progress:',
+                             suffix='Complete', length=50)
+        print(str(counter-1) + " Photos created with " +
+              str(len(logoList))+" different logos and "+str(len(texts))+" different texts...\n")
+
+        main()
+
+    def Default(self):
+        f = io.open("texts.txt", mode="r", encoding="utf-8")
+        texts = f.read()
+        texts = loads(texts)
+        f = io.open("config.txt", mode="r", encoding="utf-8")
+        configs = f.read()
+        configs = loads(configs)
+        textcolor = []
+        for number in configs["textcolor"]:
+            textcolor.append(number)
+        textcolor = (
+            textcolor[0], textcolor[1], textcolor[2])
+        backgroundcolor = []
+        for number in configs["backgroundcolor"]:
+            backgroundcolor.append(number)
+        backgroundcolor = (
+            backgroundcolor[0], backgroundcolor[1], backgroundcolor[2])
+        width = configs["width"]
+        height = configs["height"]
+        textalign = configs["textalign"]
+        fontsize = configs["fontsize"]
+        logo = (configs["logo"], configs["logovertical"],
+                configs["logohorizontal"])
+        if configs["logoresize"] == 1:
+            logoresize = True
+        else:
+            logoresize = False
+        if configs["specialbg"] == 1:
+            specialbg = True
+        else:
+            specialbg = False
+        backgroundimage = configs["backgroundimage"]
+        logosize = (configs["logosizew"], configs["logosizeh"])
+        font = configs["font"]
 
         counter = 1
         l = len(texts)
@@ -98,16 +254,21 @@ class Maxim:
                  height],
                 [textcolor,
                  backgroundcolor], [
-                    text, textalign], font, fontsize, logo, logoresize, logosize)
+                    text, textalign], font, fontsize, logo, logoresize, logosize, specialbg, backgroundimage)
             photo.Create(counter, './outputs/')
             counter += 1
             printProgressBar(counter-1, l, prefix='Progress:',
                              suffix='Complete', length=50)
-        print(l, " Photos Created...\n Press Enter To Exit")
-        input()
+        print(l, " Photos Created...\n")
+        main()
 
     def Create(self, name=uuid.uuid1(), directory='./'):
-        img = Image.new('RGB', (self.width, self.height), color=self.bgColor)
+        if self.specialBG:
+            img = Image.open(self.bgImage)
+            img = img.resize([self.width, self.height], Image.LANCZOS)
+        else:
+            img = Image.new('RGB', (self.width, self.height),
+                            color=self.bgColor)
         d = ImageDraw.Draw(img)
         w, h = d.textsize(self.text["quote"], font=self.font)
         Text_Left = 10
@@ -138,7 +299,7 @@ class Maxim:
         else:
             Text_Left = ceil((self.width-w)/2)
             Text_Top = ceil((self.height-h)/2)-10
-        TextAlign = (Text_Left, Text_Top)
+        #TextAlign = (Text_Left, Text_Top)
         Text_Top = 300
         lines = textwrap.wrap(self.text["quote"], width=ceil(self.width/36))
         y_text = Text_Top
@@ -189,5 +350,54 @@ if not os.path.exists("./img"):
 if not os.path.exists("./fonts"):
     print("fonts directory is missing")
     exit()
-photo = Maxim()
-photo.Start()
+
+
+def main():
+
+    print(Style.RESET_ALL+'OPTIONS:\n')
+    print(Fore.BLUE+'1.)'+Style.RESET_ALL +
+          'Start with '+Fore.GREEN + 'default options')
+    print(Fore.BLUE+'2.)'+Style.RESET_ALL +
+          'Start with '+Fore.GREEN + 'different background images')
+    print(Fore.BLUE+'3.)'+Style.RESET_ALL +
+          'Start with '+Fore.GREEN + 'different logos')
+    print(Fore.BLUE+'H.)'+Style.RESET_ALL +
+          'I need '+Fore.GREEN + 'HELP')
+    print(Fore.BLUE+'E.)'+Style.RESET_ALL + Fore.RED + 'EXIT')
+
+    print(Fore.YELLOW+"Option:"+Fore.WHITE)
+    x = input().lower()
+
+    if x == '1':
+        print(Style.RESET_ALL)
+        photo = Maxim()
+        photo.Default()
+    elif x == '2':
+        print(Style.RESET_ALL)
+        photo = Maxim()
+        photo.DifferentBG()
+    elif x == '3':
+        print(Style.RESET_ALL)
+        photo = Maxim()
+        photo.DifferentLogo()
+    elif x == 'h' or x == 'help':
+        print("\n\n" +
+              Fore.WHITE + "If You choose "+Fore.GREEN+"1st "+Fore.WHITE +
+              "option Maxim will start with default settings which configured in config.txt"
+              "\n\nIf You choose "+Fore.GREEN+"2nd "+Fore.WHITE +
+              "option Maxim will Create images with different backgrounds by the way maxim will use all the backgrounds you give it even if count of backgrounds greater than count of sentences which located in texts.txt file"
+              "\n\nIf You choose "+Fore.GREEN+"3rd "+Fore.WHITE +
+              "option Maxim will Create images with different logos and even if count of logos greater than count of sentences it will use all the logos"
+              "\n\n Finally don't forget specialize configs because for 3 options maxim will use some infos from config."
+              )
+        main()
+    elif x == 'e' or x == 'exit' or x == 'quit':
+        exit()
+    else:
+        print(Fore.RED + 'Invalid option'+Style.RESET_ALL)
+        main()
+
+
+if __name__ == "__main__":
+    print('WELCOME TO '+Fore.RED + 'MR. MAXIM')
+    main()

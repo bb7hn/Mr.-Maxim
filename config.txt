@@ -3,7 +3,7 @@
     "height"            :   1080,
     "textcolor"         :   [255,255,255],
     "backgroundcolor"   :   [0,0,0],
-    "logo"              :   "./img/logo.jpg",
+    "logo"              :   "./img/logo/logo.jpg",
     "logoresize"        :   1,
     "logosizew"         :   180,
     "logosizeh"         :   180,
@@ -11,5 +11,7 @@
     "logovertical"      :   "bottom",
     "font"              :   "constani.ttf",
     "fontsize"          :   72,
-    "textalign"         :   "center"
+    "textalign"         :   "center",
+    "specialbg"         :   0,
+    "backgroundimage"   :   "./img/background/bg.jpg"
 }

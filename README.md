@@ -32,17 +32,19 @@ First Step:
 
 ### Requirements
 
-Python Math and UUID(comes with python default)
+Python Math and UUID(comes as default with python)
 Python Image Library
-Python JSON Library
-Python TEXTWRAP Library
+JSON Library
+TEXTWRAP Library
+Colorama Library(for Colored Console)
 ```sh
     pip install pil
     pip install json
     pip install textwrap
+    pip install colorama
     
 ```
 
 ### Todos??
 
--   Add options menu kinda like ui but in console and colored
+-   Everything can be
