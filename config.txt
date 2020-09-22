@@ -1,0 +1,15 @@
+{
+    "width"             :   1080,
+    "height"            :   1080,
+    "textcolor"         :   [255,255,255],
+    "backgroundcolor"   :   [0,0,0],
+    "logo"              :   "./img/logo.jpg",
+    "logoresize"        :   1,
+    "logosizew"         :   180,
+    "logosizeh"         :   180,
+    "logohorizontal"    :   "center",
+    "logovertical"      :   "bottom",
+    "font"              :   "constani.ttf",
+    "fontsize"          :   72,
+    "textalign"         :   "center"
+}

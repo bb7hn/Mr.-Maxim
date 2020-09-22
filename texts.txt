@@ -1,0 +1,10 @@
+[
+    {
+        "quote": "HELLOO",
+        "author": "-MR.MAXIM"
+    },
+	{
+        "quote": "I am",
+        "author": "MR. MAXIM"
+    } 
+]
