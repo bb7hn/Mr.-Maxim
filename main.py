@@ -30,7 +30,7 @@ def printProgressBar(iteration, total, prefix='', suffix='', decimals=1, length=
                                                      (iteration / float(total)))
     filledLength = int(length * iteration // total)
     bar = fill * filledLength + '-' * (length - filledLength)
-    print(f'\r{prefix} |{bar}| {percent}% {suffix}', end=printEnd)
+    print(f'\r{prefix} |{Fore.LIGHTGREEN_EX}{bar}{Style.RESET_ALL}| {percent}% {suffix}', end=printEnd)
     # Print New Line on Complete
     if iteration == total:
         print()
@@ -48,7 +48,13 @@ class Maxim:
         logoResize=True,
         logoSize=(180, 180),
         specialBG=False,
-        bgImage="./img/background/bg.jpg"
+        bgImage="./img/background/bg.jpg",
+        margintop=10,
+        externalImage=False,
+        extimage="./img/external/default.jpg",
+        extimgw=300,
+        extimgh=300,
+        extimgalign="center"
     ):
         self.specialBG = specialBG
         self.bgImage = bgImage
@@ -64,6 +70,165 @@ class Maxim:
         self.logoAlign_Horizontal = logo[2]
         self.logoSize = logoSize
         self.logoResize = logoResize
+        self.externalImage = externalImage
+        self.extimage = extimage
+        self.extimgwidth = extimgw
+        self.extimgheight = extimgh
+        self.extimgalign = extimgalign
+        self.margintop = margintop
+
+    def Create(self, name=uuid.uuid1(), directory='./'):
+        if self.specialBG:
+            img = Image.open(self.bgImage)
+            img = img.resize([self.width, self.height], Image.LANCZOS)
+        else:
+            img = Image.new('RGB', (self.width, self.height),
+                            color=self.bgColor)
+        d = ImageDraw.Draw(img)
+        Text_Top = self.margintop
+        # check text align
+        # TextAlign = (Text_Left, Text_Top)
+        lines = textwrap.wrap(self.text["quote"], width=ceil(self.width/36))
+        y_text = Text_Top
+        for line in lines:
+            width, height = self.font.getsize(line)
+            if self.textAlign == "center" or self.textAlign == "middle":
+                d.text((ceil((self.width - width) / 2), y_text+5), line,
+                       font=self.font, fill=self.textColor)
+            elif self.textAlign == "right":
+                d.text(((self.width - width) - 20, y_text+5), line,
+                       font=self.font, fill=self.textColor)
+            else:
+                d.text((20, y_text+5), line,
+                       font=self.font, fill=self.textColor)
+            y_text += height+5
+        width, height = self.font.getsize(self.text["author"])
+        y_text += height
+        d.text((ceil(self.width - width) / 2, y_text), self.text["author"],
+               font=self.font, fill=self.textColor)
+
+        logo_img = Image.open(self.logo)
+        logo_img.putalpha(128)
+        image_Width, image_Height = logo_img.size
+        # check logo size
+        if self.width <= image_Width or self.height <= image_Height:
+            logo_img = logo_img.resize(self.logoSize, Image.LANCZOS)
+            image_Width, image_Height = logo_img.size
+        elif self.logoResize:
+            logo_img = logo_img.resize(self.logoSize, Image.LANCZOS)
+            image_Width, image_Height = logo_img.size
+        # check logo align
+        if self.logoAlign_Horizontal.lower() == "center":
+            Left = ceil((self.width - image_Width)/2)
+        elif self.logoAlign_Horizontal.lower() == "right":
+            Left = ceil(self.width-image_Width)-5
+        else:
+            Left = 5
+        if self.logoAlign_Vertical.lower() == "center":
+            Top = ceil((self.height - image_Height)/2)
+        elif self.logoAlign_Vertical.lower() == "bottom":
+            Top = ceil(self.height-image_Height)-5
+        else:
+            Top = 25
+
+        align = (Left, Top)
+        back_im = img.copy()
+        back_im.paste(logo_img, align)
+        if self.externalImage:
+            ext_img = Image.open(self.extimage)
+            ext_img = ext_img.resize([self.extimgwidth,
+                                      self.extimgheight], Image.LANCZOS)
+            image_Width, image_Height = ext_img.size
+            width, height = self.font.getsize(self.text["author"])
+            y_text += height
+            y_extimg = y_text+15
+            if self.extimgalign == "center" or self.extimgalign == "middle":
+                align = (ceil((self.width-image_Width)/2), y_extimg)
+            elif self.extimgalign == "right":
+                align = ((self.width-image_Width-20), y_extimg)
+            else:
+                align = (20, y_extimg)
+            back_im.paste(ext_img, align)
+        back_im.save(directory+str(name)+'.png', quality=100)
+
+    def Default(self, instagram=False, instaStory=False):
+        f = io.open("texts.txt", mode="r", encoding="utf-8")
+        texts = f.read()
+        texts = loads(texts)
+        f = io.open("config.txt", mode="r", encoding="utf-8")
+        configs = f.read()
+        configs = loads(configs)
+        textcolor = []
+        for number in configs["textcolor"]:
+            textcolor.append(number)
+        textcolor = (
+            textcolor[0], textcolor[1], textcolor[2])
+        backgroundcolor = []
+        for number in configs["backgroundcolor"]:
+            backgroundcolor.append(number)
+        backgroundcolor = (
+            backgroundcolor[0], backgroundcolor[1], backgroundcolor[2])
+        width = configs["width"]
+        height = configs["height"]
+        textalign = configs["textalign"]
+        fontsize = configs["fontsize"]
+        logo = (configs["logo"], configs["logovertical"],
+                configs["logohorizontal"])
+        if configs["logoresize"] == 1:
+            logoresize = True
+        else:
+            logoresize = False
+        if configs["specialbg"] == 1:
+            specialbg = True
+        else:
+            specialbg = False
+        if configs["externalImage"] == 1:
+            externalImage = True
+            extimage = configs["extimageurl"]
+        else:
+            externalImage = False
+            extimage = ''
+        backgroundimage = configs["backgroundimage"]
+        logosize = (configs["logosizew"], configs["logosizeh"])
+        font = configs["font"]
+        extimgwidth = configs["extimgwidth"]
+        extimgheight = configs["extimgheight"]
+        margintop = configs["margintop"]
+        extimagealign = configs["extimagealign"]
+        counter = 1
+        l = len(texts)
+        printProgressBar(0, l, prefix='Progress:',
+                         suffix='Complete', length=50)
+        if instagram:
+            width = 1080
+            height = 1080
+        if instaStory:
+            width = 1080
+            height = 1920
+        for text in texts:
+            photo = Maxim(
+                [width,
+                 height],
+                [textcolor,
+                 backgroundcolor], [
+                    text, textalign],
+                font, fontsize,
+                logo,
+                logoresize,
+                logosize,
+                specialbg,
+                backgroundimage,
+                margintop,
+                externalImage,
+                extimage,
+                extimgwidth,
+                extimgheight, extimagealign)
+            photo.Create(counter, './outputs/')
+            counter += 1
+            printProgressBar(counter-1, l, prefix='Progress:',
+                             suffix='Complete', length=50)
+        print(l, " Photos Created...\n")
+        main()
 
     def DifferentBG(self):
         backgroundList = []
@@ -98,6 +263,7 @@ class Maxim:
             logoresize = False
         logosize = (configs["logosizew"], configs["logosizeh"])
         font = configs["font"]
+        margintop = configs["margintop"]
         indexer = 0
         indexerText = 0
         counter = 1
@@ -124,10 +290,11 @@ class Maxim:
                 logo,
                 logoresize,
                 logosize,
-                True, backgroundList[indexer])
+                True, backgroundList[indexer], margintop)
             photo.Create(counter, './outputs/')
             counter += 1
             indexer += 1
+            indexerText += 1
             printProgressBar(counter-1, limit, prefix='Progress:',
                              suffix='Complete', length=50)
         print(counter-1, " Photos created with " +
@@ -170,6 +337,7 @@ class Maxim:
         backgroundimage = configs["backgroundimage"]
         logosize = (configs["logosizew"], configs["logosizeh"])
         font = configs["font"]
+        margintop = configs["margintop"]
         indexer = 0
         indexerText = 0
         counter = 1
@@ -197,7 +365,7 @@ class Maxim:
                 fontsize,
                 logo,
                 logoresize,
-                logosize, specialbg, backgroundimage)
+                logosize, specialbg, backgroundimage, margintop)
             photo.Create(counter, './outputs/')
             counter += 1
             indexer += 1
@@ -208,138 +376,6 @@ class Maxim:
               str(len(logoList))+" different logos and "+str(len(texts))+" different texts...\n")
 
         main()
-
-    def Default(self):
-        f = io.open("texts.txt", mode="r", encoding="utf-8")
-        texts = f.read()
-        texts = loads(texts)
-        f = io.open("config.txt", mode="r", encoding="utf-8")
-        configs = f.read()
-        configs = loads(configs)
-        textcolor = []
-        for number in configs["textcolor"]:
-            textcolor.append(number)
-        textcolor = (
-            textcolor[0], textcolor[1], textcolor[2])
-        backgroundcolor = []
-        for number in configs["backgroundcolor"]:
-            backgroundcolor.append(number)
-        backgroundcolor = (
-            backgroundcolor[0], backgroundcolor[1], backgroundcolor[2])
-        width = configs["width"]
-        height = configs["height"]
-        textalign = configs["textalign"]
-        fontsize = configs["fontsize"]
-        logo = (configs["logo"], configs["logovertical"],
-                configs["logohorizontal"])
-        if configs["logoresize"] == 1:
-            logoresize = True
-        else:
-            logoresize = False
-        if configs["specialbg"] == 1:
-            specialbg = True
-        else:
-            specialbg = False
-        backgroundimage = configs["backgroundimage"]
-        logosize = (configs["logosizew"], configs["logosizeh"])
-        font = configs["font"]
-
-        counter = 1
-        l = len(texts)
-        printProgressBar(0, l, prefix='Progress:',
-                         suffix='Complete', length=50)
-        for text in texts:
-            photo = Maxim(
-                [width,
-                 height],
-                [textcolor,
-                 backgroundcolor], [
-                    text, textalign], font, fontsize, logo, logoresize, logosize, specialbg, backgroundimage)
-            photo.Create(counter, './outputs/')
-            counter += 1
-            printProgressBar(counter-1, l, prefix='Progress:',
-                             suffix='Complete', length=50)
-        print(l, " Photos Created...\n")
-        main()
-
-    def Create(self, name=uuid.uuid1(), directory='./'):
-        if self.specialBG:
-            img = Image.open(self.bgImage)
-            img = img.resize([self.width, self.height], Image.LANCZOS)
-        else:
-            img = Image.new('RGB', (self.width, self.height),
-                            color=self.bgColor)
-        d = ImageDraw.Draw(img)
-        w, h = d.textsize(self.text["quote"], font=self.font)
-        Text_Left = 10
-        Text_Top = 200
-        # check text align
-        if self.textAlign.lower() == "left":
-            Text_Left = 10
-        elif self.textAlign.lower() == "right":
-            Text_Left = ceil(self.width-w)
-        elif self.textAlign.lower() == "center_bottom":
-            Text_Left = ceil(self.width-w)/2
-            Text_Top = ceil(self.height-h)-10
-        elif self.textAlign.lower() == "left_bottom":
-            Text_Left = 10
-            Text_Top = ceil(self.height-h)-10
-        elif self.textAlign.lower() == "right_bottom":
-            Text_Left = ceil(self.width-w)
-            Text_Top = ceil(self.height-h)-10
-        elif self.textAlign.lower() == "center_top":
-            Text_Left = ceil(self.width-w)/2
-            Text_Top = 10
-        elif self.textAlign.lower() == "left_top":
-            Text_Left = 10
-            Text_Top = 200
-        elif self.textAlign.lower() == "right_top":
-            Text_Left = ceil(self.width-w)
-            Text_Top = 200
-        else:
-            Text_Left = ceil((self.width-w)/2)
-            Text_Top = ceil((self.height-h)/2)-10
-        #TextAlign = (Text_Left, Text_Top)
-        Text_Top = 300
-        lines = textwrap.wrap(self.text["quote"], width=ceil(self.width/36))
-        y_text = Text_Top
-        for line in lines:
-            width, height = self.font.getsize(line)
-            d.text(((self.width - width) / 2, y_text+5), line,
-                   font=self.font, fill=self.textColor)
-            y_text += height+5
-        width, height = self.font.getsize(self.text["author"])
-        y_text += height
-        d.text(((self.width - width) / 2, y_text), self.text["author"],
-               font=self.font, fill=self.textColor)
-        logo_img = Image.open(self.logo)
-        image_Width, image_Height = logo_img.size
-        # check logo size
-        if self.width <= image_Width or self.height <= image_Height:
-            logo_img = logo_img.resize(self.logoSize, Image.LANCZOS)
-            image_Width, image_Height = logo_img.size
-        elif self.logoResize:
-            logo_img = logo_img.resize(self.logoSize, Image.LANCZOS)
-            image_Width, image_Height = logo_img.size
-        # check logo align
-        if self.logoAlign_Horizontal.lower() == "center":
-            Left = ceil((self.width - image_Width)/2)
-        elif self.logoAlign_Horizontal.lower() == "right":
-            Left = ceil(self.width-image_Width)-5
-        else:
-            Left = 5
-        if self.logoAlign_Vertical.lower() == "center":
-            Top = ceil((self.height - image_Height)/2)
-        elif self.logoAlign_Vertical.lower() == "bottom":
-            Top = ceil(self.height-image_Height)-5
-        else:
-            Top = 25
-
-        align = (Left, Top)
-        back_im = img.copy()
-        back_im.paste(logo_img, align)
-
-        back_im.save(directory+str(name)+'.jpg', quality=100)
 
 
 if not os.path.exists("./outputs"):
@@ -355,15 +391,19 @@ if not os.path.exists("./fonts"):
 def main():
 
     print(Style.RESET_ALL+'OPTIONS:\n')
-    print(Fore.BLUE+'1.)'+Style.RESET_ALL +
+    print(Fore.LIGHTCYAN_EX+'1.)'+Style.RESET_ALL +
           'Start with '+Fore.GREEN + 'default options')
-    print(Fore.BLUE+'2.)'+Style.RESET_ALL +
+    print(Fore.LIGHTCYAN_EX+'2.)'+Style.RESET_ALL +
           'Start with '+Fore.GREEN + 'different background images')
-    print(Fore.BLUE+'3.)'+Style.RESET_ALL +
+    print(Fore.LIGHTCYAN_EX+'3.)'+Style.RESET_ALL +
           'Start with '+Fore.GREEN + 'different logos')
-    print(Fore.BLUE+'H.)'+Style.RESET_ALL +
+    print(Fore.LIGHTCYAN_EX+'4.)'+Style.RESET_ALL +
+          'Start with '+Fore.GREEN + 'Instagram Post')
+    print(Fore.LIGHTCYAN_EX+'5.)'+Style.RESET_ALL +
+          'Start with '+Fore.GREEN + 'Instagram Story')
+    print(Fore.LIGHTCYAN_EX+'H.)'+Style.RESET_ALL +
           'I need '+Fore.GREEN + 'HELP')
-    print(Fore.BLUE+'E.)'+Style.RESET_ALL + Fore.RED + 'EXIT')
+    print(Fore.LIGHTCYAN_EX+'E.)'+Style.RESET_ALL + Fore.RED + 'EXIT')
 
     print(Fore.YELLOW+"Option:"+Fore.WHITE)
     x = input().lower()
@@ -380,6 +420,14 @@ def main():
         print(Style.RESET_ALL)
         photo = Maxim()
         photo.DifferentLogo()
+    elif x == '4':
+        print(Style.RESET_ALL)
+        photo = Maxim()
+        photo.Default(True)
+    elif x == '5':
+        print(Style.RESET_ALL)
+        photo = Maxim()
+        photo.Default(False, True)
     elif x == 'h' or x == 'help':
         print("\n\n" +
               Fore.WHITE + "If You choose "+Fore.GREEN+"1st "+Fore.WHITE +

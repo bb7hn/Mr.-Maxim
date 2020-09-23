@@ -1,6 +1,10 @@
 [
     {
-        "quote": "HELLOO You have to add some text into texts.txt(JSON format) :)) With My Regards ",
-        "author": "-MR.MAXIM"
+        "quote": "HELLOO",
+        "author": "- MR. MAXIM"
+    },
+    {
+        "quote": "MY NAME IS NAME",
+        "author": "- MR. MAXIM"
     }
 ]

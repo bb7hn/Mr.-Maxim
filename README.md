@@ -32,17 +32,22 @@ First Step:
 
 ### Requirements
 
-Python Math and UUID(comes as default with python)
-Python Image Library
-JSON Library
-TEXTWRAP Library
-Colorama Library(for Colored Console)
+Esaily open terminal in main directory of MR. MAXIM and run this command:
+
 ```sh
-    pip install pil
-    pip install json
-    pip install textwrap
+    pip install -r requirements.txt
+```
+
+Python Math and UUID(comes as default with python)
+JSON Library(comes as default with python)
+TEXTWRAP Library(comes as default with python)
+Python Image Library
+Colorama Library(for Colored Console)
+
+```sh
+    pip install pillow
     pip install colorama
-    
+
 ```
 
 ### Todos??
