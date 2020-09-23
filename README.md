@@ -27,7 +27,7 @@ Mr. MAXIM lets you create photos using special text and photo(or logo)
 First Step:
 
 ```sh
-    Download repository and begin to use no needed for installation
+    Download repository and begin to use no need for installation
 ```
 
 ### Requirements
