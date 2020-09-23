@@ -112,10 +112,10 @@ class Maxim:
         image_Width, image_Height = logo_img.size
         # check logo size
         if self.width <= image_Width or self.height <= image_Height:
-            logo_img = logo_img.resize(self.logoSize, Image.LANCZOS)
+            logo_img = logo_img.resize(self.logoSize, Image.NEAREST)
             image_Width, image_Height = logo_img.size
         elif self.logoResize:
-            logo_img = logo_img.resize(self.logoSize, Image.LANCZOS)
+            logo_img = logo_img.resize(self.logoSize, Image.NEAREST)
             image_Width, image_Height = logo_img.size
         # check logo align
         if self.logoAlign_Horizontal.lower() == "center":
@@ -137,7 +137,7 @@ class Maxim:
         if self.externalImage:
             ext_img = Image.open(self.extimage)
             ext_img = ext_img.resize([self.extimgwidth,
-                                      self.extimgheight], Image.LANCZOS)
+                                      self.extimgheight], Image.NEAREST)
             image_Width, image_Height = ext_img.size
             width, height = self.font.getsize(self.text["author"])
             y_text += height
