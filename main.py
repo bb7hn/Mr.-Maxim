@@ -54,7 +54,9 @@ class Maxim:
         extimage="./img/external/default.jpg",
         extimgw=300,
         extimgh=300,
-        extimgalign="center"
+        extimgalign="center",
+        opacity=0,
+        islogotransparent=1
     ):
         self.specialBG = specialBG
         self.bgImage = bgImage
@@ -76,11 +78,17 @@ class Maxim:
         self.extimgheight = extimgh
         self.extimgalign = extimgalign
         self.margintop = margintop
+        self.opacity = opacity
+        self.islogotransparent = islogotransparent
 
     def Create(self, name=uuid.uuid1(), directory='./'):
         if self.specialBG:
             img = Image.open(self.bgImage)
             img = img.resize([self.width, self.height], Image.LANCZOS)
+            layer = Image.new('RGB', (self.width, self.height),
+                              color=self.bgColor)
+            layer.putalpha(self.opacity)
+            img.paste(layer, (0, 0), layer)
         else:
             img = Image.new('RGB', (self.width, self.height),
                             color=self.bgColor)
@@ -88,7 +96,7 @@ class Maxim:
         Text_Top = self.margintop
         # check text align
         # TextAlign = (Text_Left, Text_Top)
-        lines = textwrap.wrap(self.text["quote"], width=ceil(self.width/36))
+        lines = textwrap.wrap(self.text["quote"], width=ceil(self.width/20))
         y_text = Text_Top
         for line in lines:
             width, height = self.font.getsize(line)
@@ -108,14 +116,14 @@ class Maxim:
                font=self.font, fill=self.textColor)
 
         logo_img = Image.open(self.logo)
-        logo_img.putalpha(128)
+
         image_Width, image_Height = logo_img.size
         # check logo size
         if self.width <= image_Width or self.height <= image_Height:
             logo_img = logo_img.resize(self.logoSize, Image.NEAREST)
             image_Width, image_Height = logo_img.size
         elif self.logoResize:
-            logo_img = logo_img.resize(self.logoSize, Image.NEAREST)
+            logo_img = logo_img.resize(self.logoSize, Image.BILINEAR)
             image_Width, image_Height = logo_img.size
         # check logo align
         if self.logoAlign_Horizontal.lower() == "center":
@@ -133,11 +141,15 @@ class Maxim:
 
         align = (Left, Top)
         back_im = img.copy()
-        back_im.paste(logo_img, align)
+        if self.islogotransparent:
+            back_im.paste(logo_img, align, logo_img)
+        else:
+            back_im.paste(logo_img, align)
+
         if self.externalImage:
             ext_img = Image.open(self.extimage)
             ext_img = ext_img.resize([self.extimgwidth,
-                                      self.extimgheight], Image.NEAREST)
+                                      self.extimgheight], Image.BILINEAR)
             image_Width, image_Height = ext_img.size
             width, height = self.font.getsize(self.text["author"])
             y_text += height
@@ -148,7 +160,7 @@ class Maxim:
                 align = ((self.width-image_Width-20), y_extimg)
             else:
                 align = (20, y_extimg)
-            back_im.paste(ext_img, align)
+            back_im.paste(ext_img, align, ext_img)
         back_im.save(directory+str(name)+'.png', quality=100)
 
     def Default(self, instagram=False, instaStory=False):
@@ -188,6 +200,10 @@ class Maxim:
         else:
             externalImage = False
             extimage = ''
+        if configs["islogotransparent"] >= 1:
+            islogotransparent = True
+        else:
+            islogotransparent = False
         backgroundimage = configs["backgroundimage"]
         logosize = (configs["logosizew"], configs["logosizeh"])
         font = configs["font"]
@@ -195,6 +211,7 @@ class Maxim:
         extimgheight = configs["extimgheight"]
         margintop = configs["margintop"]
         extimagealign = configs["extimagealign"]
+        opacity = configs["opacity"]
         counter = 1
         l = len(texts)
         printProgressBar(0, l, prefix='Progress:',
@@ -222,7 +239,7 @@ class Maxim:
                 externalImage,
                 extimage,
                 extimgwidth,
-                extimgheight, extimagealign)
+                extimgheight, extimagealign, opacity, islogotransparent)
             photo.Create(counter, './outputs/')
             counter += 1
             printProgressBar(counter-1, l, prefix='Progress:',
@@ -261,9 +278,14 @@ class Maxim:
             logoresize = True
         else:
             logoresize = False
+        if configs["islogotransparent"] >= 1:
+            islogotransparent = True
+        else:
+            islogotransparent = False
         logosize = (configs["logosizew"], configs["logosizeh"])
         font = configs["font"]
         margintop = configs["margintop"]
+        opacity = configs["opacity"]
         indexer = 0
         indexerText = 0
         counter = 1
@@ -290,7 +312,7 @@ class Maxim:
                 logo,
                 logoresize,
                 logosize,
-                True, backgroundList[indexer], margintop)
+                True, backgroundList[indexer], margintop, opacity, islogotransparent)
             photo.Create(counter, './outputs/')
             counter += 1
             indexer += 1
@@ -334,10 +356,16 @@ class Maxim:
             specialbg = True
         else:
             specialbg = False
+        if configs["islogotransparent"] >= 1:
+            islogotransparent = True
+        else:
+            islogotransparent = False
+
         backgroundimage = configs["backgroundimage"]
         logosize = (configs["logosizew"], configs["logosizeh"])
         font = configs["font"]
         margintop = configs["margintop"]
+        opacity = configs["opacity"]
         indexer = 0
         indexerText = 0
         counter = 1
@@ -365,7 +393,7 @@ class Maxim:
                 fontsize,
                 logo,
                 logoresize,
-                logosize, specialbg, backgroundimage, margintop)
+                logosize, specialbg, backgroundimage, margintop, opacity, islogotransparent)
             photo.Create(counter, './outputs/')
             counter += 1
             indexer += 1

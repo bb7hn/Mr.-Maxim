@@ -1,10 +1,7 @@
 [
     {
-        "quote": "HELLOO",
-        "author": "- MR. MAXIM"
-    },
-    {
-        "quote": "MY NAME IS NAME",
-        "author": "- MR. MAXIM"
+        "quote": "1",
+        "author": "2",
+	"underextimgtext":"Yess"
     }
 ]
