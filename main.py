@@ -161,6 +161,10 @@ class Maxim:
             else:
                 align = (20, y_extimg)
             back_im.paste(ext_img, align, ext_img)
+            d = ImageDraw.Draw(back_im)
+            width, height = self.font.getsize(self.text["underextimgtext"])
+            d.text((ceil(self.width - width) / 2, y_extimg+image_Height+height+5), self.text["underextimgtext"],
+                   font=self.font, fill=self.textColor)
         back_im.save(directory+str(name)+'.png', quality=100)
 
     def Default(self, instagram=False, instaStory=False):
