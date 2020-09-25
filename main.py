@@ -51,6 +51,7 @@ class Maxim:
         bgImage="./img/background/bg.jpg",
         margintop=10,
         externalImage=False,
+        isexternalimagetransparent=False,
         extimage="./img/external/default.jpg",
         extimgw=300,
         extimgh=300,
@@ -73,6 +74,7 @@ class Maxim:
         self.logoSize = logoSize
         self.logoResize = logoResize
         self.externalImage = externalImage
+        self.isexternalimagetransparent = isexternalimagetransparent
         self.extimage = extimage
         self.extimgwidth = extimgw
         self.extimgheight = extimgh
@@ -116,7 +118,30 @@ class Maxim:
                font=self.font, fill=self.textColor)
 
         logo_img = Image.open(self.logo)
+        back_im = img.copy()
 
+        if self.externalImage:
+            ext_img = Image.open(self.extimage)
+            ext_img = ext_img.resize([self.extimgwidth,
+                                      self.extimgheight], Image.BILINEAR)
+            image_Width, image_Height = ext_img.size
+            width, height = self.font.getsize(self.text["author"])
+            y_text += height
+            y_extimg = y_text+15
+            if self.extimgalign == "center" or self.extimgalign == "middle":
+                align = (ceil((self.width-image_Width)/2), y_extimg)
+            elif self.extimgalign == "right":
+                align = ((self.width-image_Width-20), y_extimg)
+            else:
+                align = (20, y_extimg)
+            if self.isexternalimagetransparent:
+                back_im.paste(ext_img, align, ext_img)
+            else:
+                back_im.paste(ext_img, align)
+            d = ImageDraw.Draw(back_im)
+            width, height = self.font.getsize(self.text["underextimgtext"])
+            d.text((ceil(self.width - width) / 2, y_extimg+image_Height+height-2), self.text["underextimgtext"],
+                   font=self.font, fill=self.textColor)
         image_Width, image_Height = logo_img.size
         # check logo size
         if self.width <= image_Width or self.height <= image_Height:
@@ -140,31 +165,11 @@ class Maxim:
             Top = 25
 
         align = (Left, Top)
-        back_im = img.copy()
+
         if self.islogotransparent:
             back_im.paste(logo_img, align, logo_img)
         else:
             back_im.paste(logo_img, align)
-
-        if self.externalImage:
-            ext_img = Image.open(self.extimage)
-            ext_img = ext_img.resize([self.extimgwidth,
-                                      self.extimgheight], Image.BILINEAR)
-            image_Width, image_Height = ext_img.size
-            width, height = self.font.getsize(self.text["author"])
-            y_text += height
-            y_extimg = y_text+15
-            if self.extimgalign == "center" or self.extimgalign == "middle":
-                align = (ceil((self.width-image_Width)/2), y_extimg)
-            elif self.extimgalign == "right":
-                align = ((self.width-image_Width-20), y_extimg)
-            else:
-                align = (20, y_extimg)
-            back_im.paste(ext_img, align, ext_img)
-            d = ImageDraw.Draw(back_im)
-            width, height = self.font.getsize(self.text["underextimgtext"])
-            d.text((ceil(self.width - width) / 2, y_extimg+image_Height+height+5), self.text["underextimgtext"],
-                   font=self.font, fill=self.textColor)
         back_im.save(directory+str(name)+'.png', quality=100)
 
     def Default(self, instagram=False, instaStory=False):
@@ -204,6 +209,10 @@ class Maxim:
         else:
             externalImage = False
             extimage = ''
+        if configs["isexternalimagetransparent"] >= 1:
+            isexternalimagetransparent = True
+        else:
+            isexternalimagetransparent = False
         if configs["islogotransparent"] >= 1:
             islogotransparent = True
         else:
@@ -241,6 +250,7 @@ class Maxim:
                 backgroundimage,
                 margintop,
                 externalImage,
+                isexternalimagetransparent,
                 extimage,
                 extimgwidth,
                 extimgheight, extimagealign, opacity, islogotransparent)

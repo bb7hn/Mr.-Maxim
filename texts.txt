@@ -1,7 +1,7 @@
 [
     {
-        "quote": "1",
-        "author": "2",
-	"underextimgtext":"Yess"
+        "quote": "Size bir dizi tavsiyemiz var",
+        "author": "",
+	"underextimgtext":"Silicon Valley"
     }
 ]
