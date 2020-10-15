@@ -65,9 +65,12 @@ class Maxim:
         self.width = size[0]
         self.height = size[1]
         self.text = text[0]
+
         self.textAlign = text[1]
         self.textColor = Colors[0]
         self.font = ImageFont.truetype(font, fontsize)
+        self.fontsize = fontsize
+        self.titlefont = ImageFont.truetype(font, fontsize+10)
         self.logo = logo[0]
         self.logoAlign_Vertical = logo[1]
         self.logoAlign_Horizontal = logo[2]
@@ -96,10 +99,13 @@ class Maxim:
                             color=self.bgColor)
         d = ImageDraw.Draw(img)
         Text_Top = self.margintop
-        # check text align
-        # TextAlign = (Text_Left, Text_Top)
-        lines = textwrap.wrap(self.text["quote"], width=ceil(self.width/20))
-        y_text = Text_Top
+        titlemargintop = 0
+        self.text["title"] = ''
+        width, height = self.font.getsize(self.text["title"])
+        d.text((ceil((self.width - width) / 2), titlemargintop), self.text["title"],
+               font=self.titlefont, fill=self.textColor)
+        lines = textwrap.wrap(self.text["quote"], width=ceil(self.width/ceil(self.fontsize/2.5)))
+        y_text = Text_Top+titlemargintop-(len(lines)*self.fontsize)
         for line in lines:
             width, height = self.font.getsize(line)
             if self.textAlign == "center" or self.textAlign == "middle":

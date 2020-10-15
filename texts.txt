@@ -1,7 +1,8 @@
 [
-    {
-        "quote": "Size bir dizi tavsiyemiz var",
-        "author": "",
-	"underextimgtext":"Silicon Valley"
+{
+    "title":            "Alfakod",
+    "quote":            "Quote",
+    "author":           "- MR. Maxim",
+    "underextimgtext":  "hell yeah"
     }
 ]

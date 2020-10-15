@@ -1,3 +1,6 @@
 img/logo/alfakod.png
 img/background/alfakod.jpg
-
+outputs/
+img/
+__pycache__
+.gitignore

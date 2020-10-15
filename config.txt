@@ -11,16 +11,16 @@
     "logosizeh"                 :   100,
     "logohorizontal"            :   "right",
     "logovertical"              :   "bottom",
-    "font"                      :   "constani.ttf",
-    "fontsize"                  :   36,
+    "font"                      :   "./fonts/Bangers-Regular.ttf",
+    "fontsize"                  :   76,
     "textalign"                 :   "center",
-    "margintop"                 :   120,
+    "margintop"                 :   100,
     "specialbg"                 :   1,
     "backgroundimage"           :   "./img/background/alfakod.jpg",
     "externalImage"	            :   1,
     "isexternalimagetransparent":   0,
     "extimageurl"	            :   "./img/external/siliconvalley.jpg",
     "extimagealign"	            :   "center",
-    "extimgwidth"	            :   690,
-    "extimgheight"	            :   400
+    "extimgwidth"	            :   600,
+    "extimgheight"	            :   300
 }
